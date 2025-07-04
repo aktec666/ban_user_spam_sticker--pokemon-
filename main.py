@@ -4,6 +4,9 @@ from random import randint
 
 from logic import *
 
+from datetime import datetime
+
+
 bot = telebot.TeleBot(token) 
 
 @bot.message_handler(commands=['go'])
@@ -37,6 +40,22 @@ def attack_pok(message):
 
 
 
+@bot.message_handler(commands=['feed'])
+def feed_pok(message):
+    if message.from_user.username in Pokemon.pokemons.keys():
+        pok = Pokemon.pokemons[message.from_user.username]
+        res = pok.feed()
+        bot.send_message(message.chat.id, res)
+    else:
+        bot.send_message(message.chat.id, "Ты не создал себе покемона")
+
+
+@bot.message_handler(commands=['time'])
+def happy_time(message):
+    t1 = datetime.now()
+    t2 = datetime(2025, 9, 1)
+    print(t2-t1)
+    bot.send_message(message.chat.id, str(t2-t1))
 
 @bot.message_handler(func=lambda message: True, content_types=['sticker','photo'])
 def handle_sticker(msg):
@@ -44,6 +63,7 @@ def handle_sticker(msg):
     user_id = msg.from_user.id
     bot.ban_chat_member(chat_id, user_id)
     bot.delete_message(msg.chat.id, msg.message_id)
+
 
 
 bot.infinity_polling(none_stop=True)
